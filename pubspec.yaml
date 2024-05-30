@@ -42,6 +42,7 @@ dependencies:
   http:
   gif:
   flutter_typeahead: ^3.2.1
+  day_night_switcher: ^0.2.0+1
 
 
 

@@ -15,17 +15,21 @@ class _LocationPageState extends State<LocationPage> {
   Future<List<String>> fetchCitySuggestions(String query) async {
     final String apiKey = '40228e3078cc75c6b9ac266d59da9fec'; // Replace with your OpenWeatherMap API key
     final String apiUrl = 'http://api.openweathermap.org/data/2.5/find?q=$query&type=like&sort=population&cnt=30&appid=$apiKey';
+    try {
+      final response = await http.get(Uri.parse(apiUrl));
 
-    final response = await http.get(Uri.parse(apiUrl));
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body)['list'];
+        return data.map((item) => "${item['name']}, ${item['sys']['country']}")
+            .toList();
+      } else {
+        return [];
+      }
 
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body)['list'];
-      return data.map((item) => "${item['name']}, ${item['sys']['country']}").toList();
-    } else {
-      throw Exception('Failed to load city suggestions');
+    }catch(e){
+      return [];
     }
   }
-
   void navigateToHomePage(String city) {
     Navigator.pushReplacement(
       context,
@@ -69,7 +73,7 @@ class _LocationPageState extends State<LocationPage> {
               },
               itemBuilder: (context, String suggestion) {
                 return ListTile(
-                  title: Text(suggestion, style: TextStyle(color: Colors.black)),
+                  title: Text(suggestion, style: TextStyle()),
                 );
               },
               onSuggestionSelected: (String suggestion) {
